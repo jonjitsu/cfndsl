@@ -712,6 +712,7 @@ Resources:
     ManagedPolicyArns: [ String ]
     Path: String
     Policies: [ IAMEmbeddedPolicy ]
+    RoleName: String
    Attributes:
     Arn : String
   "AWS::IAM::UserToGroupAddition" :
@@ -724,6 +725,7 @@ Resources:
     Groups: [String]
     LoginProfile: String
     ManagedPolicyArns: [ String ]
+    UserName: String
     Policies: [ IAMEmbeddedPolicy ]
    Attributes:
     Arn: String
@@ -994,8 +996,11 @@ Resources:
    Properties:
     BucketName: String
     AccessControl: String
+    CorsConfiguration: JSON
     LifecycleConfiguration: JSON
+    LoggingConfiguration: JSON
     NotificationConfiguration: S3NotificationConfiguration
+    ReplicationConfiguration: JSON
     VersioningConfiguration: JSON
     WebsiteConfiguration: JSON
     Tags: [ ResourceTag ]
@@ -1532,8 +1537,8 @@ Types:
  SnapshotOptions:
    AutomatedSnapshotStartHour: Integer
  RedrivePolicy:
-   DeadLetterTargetArn: String
-   MaxReceiveCount: Integer
+   deadLetterTargetArn: String
+   maxReceiveCount: Integer
  VpcConfig:
    SecurityGroupIds: [ String ]
    SubnetIds: [ String ]
