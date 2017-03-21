@@ -16,7 +16,7 @@ Gem::Specification.new do |s|
   s.test_files    = s.files.grep(%r{^(test|spec|features)/})
   s.require_paths = ['lib']
 
-  s.executables << 'cfndsl'
+  s.executables = s.files.grep(%r{^bin/}) { |f| File.basename(f) }
 
   s.add_development_dependency 'bundler'
 

@@ -1,0 +1,20 @@
+#!/usr/bin/env ruby
+require 'json'
+require 'optparse'
+require 'cfndsl/aws/generator'
+
+def main
+  optparse = OptionParser.new do |opts|
+    opts.banner = "types.yaml generator\nUsage: generator AWS_SPEC_FILE.json"
+  end
+  optparse.parse!
+  unless ARGV[0]
+    puts optparse.help
+    exit(1)
+  end
+  filename = File.expand_path(ARGV[0])
+  print from_file(filename).to_yaml
+end
+
+main
+
