@@ -24,3 +24,9 @@ def read_json_fixture(filename)
   filename = fixture_filename(filename)
   JSON.parse(File.read(filename))
 end
+
+def save_data(data, where='/tmp/dump')
+  File.open(where, 'w') do |f|
+    f.write(data.to_json)
+  end
+end

@@ -49,4 +49,42 @@ describe 'AWS type generator' do
     spec = { ResourceTypes: types }
     expect(resources(spec)).to eq(types)
   end
+
+  it 'spec_to_cfndsl_type_name' do
+    names = ['AWS::CodeBuild::Project.Artifacts',
+             'AWS::ElasticBeanstalk::ConfigurationTemplate.ConfigurationOptionSetting',
+             'AWS::EC2::SpotFleet.IamInstanceProfile',
+             'AWS::CodePipeline::Pipeline.InputArtifact',
+             'AWS::SNS::Topic.Subscription',
+             'AWS::CodePipeline::Pipeline.ArtifactStore',
+             'AWS::AutoScaling::AutoScalingGroup.MetricsCollection',
+             'AWS::DynamoDB::Table.KeySchema',
+             'AWS::S3::Bucket.ReplicationConfiguration',
+             'AWS::S3::Bucket.NotificationFilter',
+             'AWS::DataPipeline::Pipeline.ParameterAttribute',
+             'AWS::CloudFront::Distribution.ViewerCertificate',
+             'AWS::EMR::Cluster.Configuration',
+             'AWS::CertificateManager::Certificate.DomainValidationOption',
+             'AWS::ECS::TaskDefinition.HostEntry',
+             'AWS::S3::Bucket.Rule',
+             'AWS::S3::Bucket.RoutingRuleCondition',
+             'AWS::S3::Bucket.QueueConfiguration',
+             'AWS::KinesisFirehose::DeliveryStream.ElasticsearchDestinationConfiguration',
+             'AWS::ElasticLoadBalancing::LoadBalancer.Listeners',
+             'AWS::S3::Bucket.LifecycleConfiguration',
+             'AWS::AutoScaling::LaunchConfiguration.BlockDeviceMapping',
+             'AWS::S3::Bucket.TopicConfiguration',
+             'AWS::CloudFront::Distribution.S3OriginConfig',
+             'AWS::ElasticLoadBalancingV2::LoadBalancer.LoadBalancerAttribute']
+    expected = ['Artifacts', 'ConfigurationOptionSetting', 'IamInstanceProfile', 'InputArtifact',
+                'Subscription', 'ArtifactStore', 'MetricsCollection', 'KeySchema',
+                'ReplicationConfiguration', 'NotificationFilter', 'ParameterAttribute',
+                'ViewerCertificate', 'Configuration', 'DomainValidationOption', 'HostEntry',
+                'Rule', 'RoutingRuleCondition', 'QueueConfiguration', 'ElasticsearchDestinationConfiguration',
+                'Listeners', 'LifecycleConfiguration', 'BlockDeviceMapping', 'TopicConfiguration',
+                'S3OriginConfig', 'LoadBalancerAttribute']
+    actual = names.map { |n| spec_to_cfndsl_type_name n }
+    save_data(actual)
+    expect(actual).to eq(expected)
+  end
 end

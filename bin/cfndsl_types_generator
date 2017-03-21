@@ -1,5 +1,6 @@
 #!/usr/bin/env ruby
 require 'json'
+require 'yaml'
 require 'optparse'
 require 'cfndsl/aws/generator'
 

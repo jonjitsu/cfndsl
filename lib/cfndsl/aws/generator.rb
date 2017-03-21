@@ -33,15 +33,15 @@ def property_types(resource)
   end
 end
 
-def generate(spec)
+def generate_resources(spec)
   resources(spec).reduce({}) do |c, (name, info)|
-    c[name] = { Properties: property_types(info) }
+    c[name] = { 'Properties' => property_types(info) }
     c
   end
 end
 
-def ordered(hash)
-  hash.keys.sort.reduce({}) do |c, key|
+def ordered(hash, start_hash={})
+  hash.keys.sort.reduce(start_hash) do |c, key|
     c[key] = hash[key]
     c
   end
@@ -73,10 +73,6 @@ def primitives(collected_types)
   end
 end
 
-def others(collected_types, spec)
-
-end
-
 def add_types(types, resource, resource_name)
   properties(resource).each do |name, info|
     add_type(types, info, resource_name)
@@ -90,10 +86,65 @@ def collect_types(spec)
   end
 end
 
+def spec_to_cfndsl_type_name(name)
+  parts = name.split('.')
+  raise 'Weird PropertyType name: ' + name if parts.length > 2
+  parts[-1]
+end
+
+def has_method?(o, method)
+  o.methods.include? method.to_sym
+end
+
+def collect_primitives(primitives, info)
+  properties(info).each do |name, prop|
+    if has_method?(prop, :key?)
+      if prop.key? 'PrimitiveType'
+        primitives.add prop['PrimitiveType']
+      elsif prop.key? 'PrimitiveItemType'
+        primitives.add prop['PrimitiveItemType']
+      end
+    else
+      p prop
+      raise 'No key? method'
+    end
+  end
+  primitives
+end
+
+def primitives_to_hash(primitives)
+  primitives.reduce({}) do |c, type|
+    c[type] = type
+    c
+  end
+end
+
+def generate_types(spec)
+  primitives = Set.new
+  types = spec['PropertyTypes'].reduce({}) do |c, (name, info)|
+    name = spec_to_cfndsl_type_name(name)
+    collect_primitives(primitives, info)
+    c[name] = property_types(info)
+    c
+  end
+  ordered(types, primitives_to_hash(primitives))
+end
+
+def items_with_keys_like(hash, like_what)
+  hash.select do |key, value|
+    key.to_s.match(like_what)
+  end
+end
+
+def generate(spec)
+  { 'Resources' => ordered(generate_resources(spec)),
+    'Types' => ordered(generate_types(spec)) }
+end
+
 def load_spec_file(filename)
   JSON.parse(File.read(filename))
 end
 
 def from_file(filename)
-  ordered(generate(load_spec_file(filename)))
+  generate(load_spec_file(filename))
 end
