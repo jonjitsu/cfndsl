@@ -1,3 +1,5 @@
+require 'json'
+
 def resources(spec)
   spec['ResourceTypes'] || spec[:ResourceTypes]
 end
@@ -48,19 +50,31 @@ end
 def add_type(types, prop, prefix='')
   if prop.key? 'PrimitiveType'
     val = prop['PrimitiveType']
-    types[:primitive][val] = 1
+    types[:primitive].add val
   elsif prop.key? 'PrimitiveItemType'
     val = prop['PrimitiveItemType']
-    types[:primitive][val] = 1
+    types[:primitive].add val
   elsif prop.key? 'ItemType'
     val = prop['ItemType']
     p prefix, val
-    types[:other][prefix + val] = 1
+    types[:other].add(prefix + val)
   elsif prop.key? 'Type' and prop['Type'].downcase != 'list'
     val = prop['Type']
-    types[:other][prefix + val] = 1
+    types[:other].add(prefix + val)
   end
   types
+end
+
+def primitives(collected_types)
+  raise 'no primitives' unless collected_types.key? :primitive
+  collected_types[:primitive].reduce({}) do |c, type|
+    c[type] = type
+    c
+  end
+end
+
+def others(collected_types, spec)
+
 end
 
 def add_types(types, resource, resource_name)
@@ -71,7 +85,7 @@ def add_types(types, resource, resource_name)
 end
 
 def collect_types(spec)
-  resources(spec).reduce({primitive: {}, other: {}}) do |types, (name, info)|
+  resources(spec).reduce({primitive: Set.new, other: Set.new}) do |types, (name, info)|
     add_types(types, info, name + '.')
   end
 end
