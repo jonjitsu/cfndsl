@@ -8,6 +8,7 @@ group :development, :test do
   gem 'rubocop', require: false
   gem 'yamllint', require: false
   gem 'pry', require: false
+  gem 'hashdiff'
 end
 
 group :test do

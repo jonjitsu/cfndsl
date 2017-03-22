@@ -69,9 +69,10 @@ end
 
 def generate_resources(spec)
   resources(spec).reduce({}) do |c, (name, info)|
-    c[name] = { 'Properties' => property_types(info) }
     attributes = property_attributes(info)
+    c[name] = {}
     c[name]['Attributes'] = attributes unless attributes.empty?
+    c[name]['Properties'] = property_types(info)
     c
   end
 end
@@ -137,12 +138,16 @@ def sort_resource(resource)
   # ordered(resource, {})
 end
 
-def sort_types_file(filename)
-  data = load_spec_file(filename)
+def sort_types_data(data)
   {
     'Resources' => ordered(data['Resources'], {}, :sort_resource),
     'Types' => ordered(data['Types'])
   }
+end
+
+def sort_types_file(filename)
+  data = load_spec_file(filename)
+  sort_types_data data
 end
 
 def load_spec_file(filename)
