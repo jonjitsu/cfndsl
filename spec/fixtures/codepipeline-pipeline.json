@@ -1,0 +1,24 @@
+{
+  "Resources": {
+    "Test": {
+      "Type": "AWS::CodePipeline::Pipeline",
+      "Properties": {
+        "Stages": [
+          {
+            "Name": "ANiceName",
+            "Blockers": [],
+            "Actions": []
+          }
+        ],
+        "RoleArn": "arn:::::asdf",
+        "RestartExecutionOnUpdate": true,
+        "Name": "TestPipeline",
+        "ArtifactStore": {
+          "Type": "S3",
+          "Location": "s3://asdf"
+        }
+      }
+    }
+  },
+  "AWSTemplateFormatVersion": "2010-09-09"
+}

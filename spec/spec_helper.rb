@@ -1,4 +1,5 @@
 require 'aruba/rspec'
+require 'json'
 
 if ENV['CFNDSL_COV']
   require 'simplecov'

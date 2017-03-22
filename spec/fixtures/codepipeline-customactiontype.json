@@ -1,0 +1,21 @@
+{
+  "Resources": {
+    "Test": {
+      "Type": "AWS::CodePipeline::CustomActionType",
+      "Properties": {
+        "Version": "1.1.1",
+        "Settings": {},
+        "Provider": "asdf",
+        "OutputArtifactDetails": {},
+        "InputArtifactDetails": {},
+        "ConfigurationProperties": {
+          "Type": "NiceType",
+          "Queryable": true,
+          "Description": "a nice description"
+        },
+        "Category": "String"
+      }
+    }
+  },
+  "AWSTemplateFormatVersion": "2010-09-09"
+}
