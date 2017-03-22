@@ -5,16 +5,30 @@ require 'optparse'
 require 'cfndsl/aws/generator'
 
 def main
+  action = :generate
   optparse = OptionParser.new do |opts|
-    opts.banner = "types.yaml generator\nUsage: generator AWS_SPEC_FILE.json"
+    opts.banner = "types.yaml generator\nUsage: generator [option] FILE"
+    opts.on('-g', '--generate', '[default] Generate types.yaml from AWS spec.json') do
+      action = :generate
+    end
+
+    opts.on('-s', '--sort', 'Sort a types.yaml file.') do
+      action = :sort
+    end
   end
+
   optparse.parse!
   unless ARGV[0]
     puts optparse.help
     exit(1)
   end
+
   filename = File.expand_path(ARGV[0])
-  print from_file(filename).to_yaml
+  if action == :generate
+    STDOUT.puts from_file(filename).to_yaml
+  else
+    STDOUT.puts sort_types_file(filename).to_yaml
+  end
 end
 
 main
