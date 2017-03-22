@@ -9,6 +9,17 @@ def properties(resource)
   resource['Properties'] || resource[:Properties]
 end
 
+def ordered(hash, start_hash={}, fn=nil)
+  hash.keys.sort.reduce(start_hash) do |c, key|
+    if fn.nil?
+      c[key] = hash[key]
+    else
+      c[key] = send(fn, hash[key])
+    end
+    c
+  end
+end
+
 # For compatibility with cfndsl types
 def transform_type(type)
   if type.is_a?(String) && type.downcase == 'json'
@@ -19,7 +30,7 @@ def transform_type(type)
 end
 
 def property_type(prop)
-  types =  %w(PrimitiveItemType PrimitiveType ItemType)
+  types = %w(PrimitiveItemType PrimitiveType ItemType)
   type = (types & prop.keys()).pop()
 
   if type.nil?
@@ -30,6 +41,7 @@ def property_type(prop)
     value = prop[type]
     if prop.key? 'Type'
       return [value] if prop['Type'].downcase == 'list'
+      return [value] if prop['Type'].downcase == 'map'
     end
     return value
   end
@@ -37,22 +49,29 @@ def property_type(prop)
 end
 
 def property_types(resource)
-  properties(resource).reduce({}) do |c, (name, info)|
+  ordered(properties(resource).reduce({}) do |c, (name, info)|
     c[name] = transform_type(property_type(info))
     c
-  end
+  end)
+end
+
+def property_attributes(resource)
+  atts = resource['Attributes']
+  return {} if atts.nil?
+
+  ordered(
+    atts.reduce({}) do |c, (name, info)|
+      c[name] = transform_type(property_type(info))
+      c
+    end
+  )
 end
 
 def generate_resources(spec)
   resources(spec).reduce({}) do |c, (name, info)|
     c[name] = { 'Properties' => property_types(info) }
-    c
-  end
-end
-
-def ordered(hash, start_hash={})
-  hash.keys.sort.reduce(start_hash) do |c, key|
-    c[key] = hash[key]
+    attributes = property_attributes(info)
+    c[name]['Attributes'] = attributes unless attributes.empty?
     c
   end
 end
@@ -113,10 +132,15 @@ def generate(spec)
     'Types' => ordered(generate_types(spec)) }
 end
 
+def sort_resource(resource)
+  ordered(resource, {}, :ordered)
+  # ordered(resource, {})
+end
+
 def sort_types_file(filename)
   data = load_spec_file(filename)
   {
-    'Resources' => ordered(data['Resources']),
+    'Resources' => ordered(data['Resources'], {}, :sort_resource),
     'Types' => ordered(data['Types'])
   }
 end
